@@ -1,9 +1,10 @@
 
-import React, { FC } from 'react'
+import React, { FC, useContext } from 'react'
 import Head from 'next/head';
 
 import { Box } from "@mui/material";
 import { Navbar, Sidebar } from '../ui';
+
 
 interface Props {
     title?: string,
@@ -11,8 +12,10 @@ interface Props {
 }
 
 export const Layout: FC<Props> = ({ title = 'Open - Jira', children }) => {
+
     return (
-        <Box sx={{ flexFlow: 1 }}>
+
+        <Box sx={{ flexFlow: 1 }} >
             <Head>
                 <title>{title}</title>
             </Head>
