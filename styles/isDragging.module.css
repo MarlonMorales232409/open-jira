@@ -1,0 +1,6 @@
+.isDragging {
+    border: dashed 2px #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+
+}
