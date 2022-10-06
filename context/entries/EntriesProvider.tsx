@@ -17,26 +17,7 @@ interface Props {
 
 // * Initial state 
 const ENTRIES_INITIAL_STATE: EntriesState = {
-    entries: [
-        {
-            _id: uuidv4(),
-            description: "Pending: Work in make my own Bussnise",
-            createdAt: Date.now(),
-            status: 'pending'
-        },
-        {
-            _id: uuidv4(),
-            description: "In-Progress: Work in make my own Bussnise",
-            createdAt: Date.now() + 1000000,
-            status: 'in-progress'
-        },
-        {
-            _id: uuidv4(),
-            description: "Finished: Work in make my own Bussnise",
-            createdAt: Date.now() * 25,
-            status: 'finished'
-        }
-    ]
+    entries: []
 }
 
 
