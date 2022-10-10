@@ -34,18 +34,14 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
         dispatch({ type: '[Entry] - Refresh Entries', payload: data })
     }
 
-    const addNewEntry = (description: string) => {
+    const addNewEntry = async (description: string) => {
 
-        const newEntry: Entry = {
-            _id: uuidv4(),
-            description,
-            createdAt: Date.now(),
-            status: 'pending'
-        }
-
+        const { data } = await entriesApi.post('/entries', {
+            description
+        })
         dispatch({
             type: "[Entry] - New Entry",
-            payload: newEntry
+            payload: data
         })
 
     }
