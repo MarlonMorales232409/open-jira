@@ -22,8 +22,24 @@ export default function handler(
 		case "PUT":
 			return updateEntry(req, res);
 
+		case "GET":
+			return getEntry(req, res);
+
 		default:
 			res.status(400).json({ message: "Method does not exist" });
+	}
+}
+
+async function getEntry(req: NextApiRequest, res: NextApiResponse) {
+	const { id } = req.query;
+
+	db.connect();
+
+	try {
+		const entry = await Entry.findById(id);
+		return res.status(200).json(entry);
+	} catch (error) {
+		return res.status(400).json({ message: `No enties with id ${id}}` });
 	}
 }
 
@@ -45,11 +61,14 @@ async function updateEntry(req: NextApiRequest, res: NextApiResponse<Data>) {
 		status = entryToUpdate?.status,
 	} = req.body;
 
-	const updatedEntry = await Entry.findByIdAndUpdate(
-		id,
-		{ description, status },
-		{ runValidators: true, new: true }
-	);
-
-	res.status(200).json(updatedEntry!);
+	try {
+		const updatedEntry = await Entry.findByIdAndUpdate(
+			id,
+			{ description, status },
+			{ runValidators: true, new: true }
+		);
+		res.status(200).json(updatedEntry!);
+	} catch (error: any) {
+		res.status(400).json(error);
+	}
 }

@@ -1,4 +1,4 @@
-import { FC, useEffect, useReducer } from 'react'
+import { FC, useEffect, useReducer, useState } from 'react'
 import { Entry } from '../../interfaces';
 import { EntriesContext } from './'
 import { entriesReducer } from './entriesReducer';
@@ -26,6 +26,9 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
 
     const [state, dispatch] = useReducer(entriesReducer, ENTRIES_INITIAL_STATE)
 
+
+    const [isUpdatingEntry, setIsUpdatingEntry] = useState(false)
+
     // * Initial data load [load entries array from the db]
     // * function refreshApi only will be called inside if useEffect
 
@@ -46,8 +49,19 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
 
     }
 
-    const updateEntry = (entry: Entry) => {
-        dispatch({ type: "[Entry] - Update Entry Status", payload: entry })
+    const updateEntry = async ({ _id, description, status }: Entry) => {
+
+        try {
+            setIsUpdatingEntry(true)
+            const { data } = await entriesApi.put(`/entries/${_id}`, {
+                description,
+                status
+            })
+            dispatch({ type: "[Entry] - Update Entry Status", payload: data })
+            setIsUpdatingEntry(false)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
 
@@ -60,8 +74,9 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
     return (
         <EntriesContext.Provider value={{
             ...state,
+            isUpdatingEntry,
             addNewEntry,
-            updateEntry
+            updateEntry,
         }}>
             {children}
         </EntriesContext.Provider>
