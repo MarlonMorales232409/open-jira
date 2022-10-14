@@ -1,18 +1,30 @@
-import { Layout } from "../../components/layouts";
+import { ChangeEvent, useMemo, useState, FC } from 'react';
 import { EntiesStatus, Entry } from '../../interfaces/entry';
+import { dbEntries } from "../../database";
+
+import { Layout } from "../../components/layouts";
 import { Button, capitalize, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, IconButton, Radio, RadioGroup, TextField } from "@mui/material";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutline';
-import { ChangeEvent, useState } from "react";
+import { GetServerSideProps } from "next";
+
+
 
 const options: EntiesStatus[] = ['pending', 'in-progress', 'finished']
 
-const EntryPage = () => {
+interface Props {
+    entry: Entry
+}
 
+const EntryPage: FC<Props> = (props) => {
 
-    const [inputValue, setInputValue] = useState("")
-    const [status, setStatus] = useState<EntiesStatus>('pending')
+    const { entry } = props
+
+    const [inputValue, setInputValue] = useState(entry.description)
+    const [status, setStatus] = useState<EntiesStatus>(entry.status)
     const [touched, setTouched] = useState(false)
+
+    const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])
 
     const onInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setInputValue(event.target.value)
@@ -31,7 +43,7 @@ const EntryPage = () => {
     }
 
     return (
-        <Layout>
+        <Layout title={'Editing Entry' + entry._id}>
             <Grid
                 container
                 justifyContent={'center'}
@@ -40,8 +52,8 @@ const EntryPage = () => {
                 <Grid item xs={12} sm={8} md={6}>
                     <Card>
                         <CardHeader
-                            title='.....'
-                            subheader='made it .... ago'
+                            title={entry.description.substring(0, 7)}
+                            subheader={`made it ${entry.createdAt} ago`}
                         />
 
                         <CardContent>
@@ -54,7 +66,9 @@ const EntryPage = () => {
                                 label={"New entry"}
                                 value={inputValue}
                                 onChange={onInputChange}
-                            // onBlur={() => setTouched(true)}
+                                onBlur={() => setTouched(true)}
+                                helperText={isNotValid && 'Enter a value'}
+                                error={isNotValid}
                             />
                         </CardContent>
 
@@ -85,6 +99,7 @@ const EntryPage = () => {
                                 variant="contained"
                                 startIcon={<SaveOutlinedIcon />}
                                 onClick={onSave}
+                                disabled={inputValue.length <= 0}
                             >
                                 Save
                             </Button>
@@ -110,4 +125,29 @@ const EntryPage = () => {
     );
 }
 
+
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+
+    const { id } = params as { id: string }
+
+    const entry = await dbEntries.getEntryById(id);
+
+    if (!entry) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            entry: entry
+        }
+    }
+}
+
 export default EntryPage;
+

@@ -3,12 +3,15 @@ import { Card, CardActionArea, CardActions, CardContent, Typography } from "@mui
 import { Entry } from "../../interfaces";
 import { UIContext } from "../../context/ui";
 import { EntriesContext } from "../../context/entries";
+import { useRouter } from "next/router";
 
 interface Props {
     entry: Entry
 }
 
 export const EntryCard: FC<Props> = ({ entry }) => {
+
+    const router = useRouter()
 
     const { isUpdatingEntry } = useContext(EntriesContext)
 
@@ -25,6 +28,10 @@ export const EntryCard: FC<Props> = ({ entry }) => {
         onToggleDragging(false)
     }
 
+    const onCLick = () => {
+        router.push(`/entries/${entry._id}`)
+    }
+
     return (
         <>
             {
@@ -35,6 +42,7 @@ export const EntryCard: FC<Props> = ({ entry }) => {
                         draggable
                         onDragStart={onDragEntry}
                         onDragEnd={onDragEntryEnd}
+                        onClick={onCLick}
                     >
                         <CardActionArea >
 
