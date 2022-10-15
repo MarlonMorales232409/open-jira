@@ -5,6 +5,7 @@ import { entriesReducer } from './entriesReducer';
 import { v4 as uuidv4 } from 'uuid';
 import { NewEntry } from '../../components/ui/NewEntry';
 import { entriesApi } from '../../apis';
+import { useSnackbar } from 'notistack';
 
 // * Local Interfaces
 export interface EntriesState {
@@ -23,6 +24,8 @@ const ENTRIES_INITIAL_STATE: EntriesState = {
 
 
 export const EntriesProvider: FC<Props> = ({ children }) => {
+
+    const { enqueueSnackbar } = useSnackbar()
 
     const [state, dispatch] = useReducer(entriesReducer, ENTRIES_INITIAL_STATE)
 
@@ -49,7 +52,7 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
 
     }
 
-    const updateEntry = async ({ _id, description, status }: Entry) => {
+    const updateEntry = async ({ _id, description, status }: Entry, showSnackbar = false) => {
 
         try {
             setIsUpdatingEntry(true)
@@ -59,6 +62,19 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
             })
             dispatch({ type: "[Entry] - Update Entry Status", payload: data })
             setIsUpdatingEntry(false)
+
+            if (showSnackbar) {
+                enqueueSnackbar('Entry has been updated', {
+                    variant: 'success',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                        vertical: 'top',
+                        horizontal: 'right'
+                    }
+                })
+            }
+
+
         } catch (error) {
             console.log(error)
         }

@@ -6,7 +6,7 @@ interface ContextProps {
     entries: Entry[],
     isUpdatingEntry: boolean,
     addNewEntry: (description: string) => void,
-    updateEntry: (payload: Entry) => void
+    updateEntry: (payload: Entry, showSnackbar?: boolean) => void
 }
 
 

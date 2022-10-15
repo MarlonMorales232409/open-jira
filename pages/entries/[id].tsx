@@ -1,12 +1,15 @@
-import { ChangeEvent, useMemo, useState, FC } from 'react';
+import { ChangeEvent, useMemo, useState, FC, useContext } from 'react';
 import { EntiesStatus, Entry } from '../../interfaces/entry';
 import { dbEntries } from "../../database";
+import { GetServerSideProps } from "next";
+import { EntriesContext } from '../../context/entries';
+import { dateFunctions } from '../../utils';
 
 import { Layout } from "../../components/layouts";
 import { Button, capitalize, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, IconButton, Radio, RadioGroup, TextField } from "@mui/material";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutline';
-import { GetServerSideProps } from "next";
+
 
 
 
@@ -16,15 +19,17 @@ interface Props {
     entry: Entry
 }
 
-const EntryPage: FC<Props> = (props) => {
+const EntryPage: FC<Props> = ({ entry }) => {
 
-    const { entry } = props
+    const { updateEntry } = useContext(EntriesContext)
 
     const [inputValue, setInputValue] = useState(entry.description)
     const [status, setStatus] = useState<EntiesStatus>(entry.status)
     const [touched, setTouched] = useState(false)
 
     const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])
+
+
 
     const onInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setInputValue(event.target.value)
@@ -36,10 +41,18 @@ const EntryPage: FC<Props> = (props) => {
     }
 
     const onSave = () => {
-        console.log({
-            inputValue,
-            status
-        })
+
+        if (inputValue.trim().length === 0) return
+
+        updateEntry({
+            ...entry,
+            status,
+            description: inputValue
+        }, true)
+    }
+
+    const onDelete = () => {
+        console.log('deleting object')
     }
 
     return (
@@ -52,8 +65,8 @@ const EntryPage: FC<Props> = (props) => {
                 <Grid item xs={12} sm={8} md={6}>
                     <Card>
                         <CardHeader
-                            title={entry.description.substring(0, 7)}
-                            subheader={`made it ${entry.createdAt} ago`}
+                            title={`${entry.description.substring(0, 10)}...`}
+                            subheader={`made it ${dateFunctions.getDistanceFromNow(entry.createdAt)} ago`}
                         />
 
                         <CardContent>
@@ -111,6 +124,7 @@ const EntryPage: FC<Props> = (props) => {
             </Grid>
 
             <IconButton
+                onClick={onDelete}
                 sx={{
                     position: 'fixed',
                     bottom: 30,
@@ -118,7 +132,6 @@ const EntryPage: FC<Props> = (props) => {
                     background: 'red'
                 }}
             >
-
                 <DeleteOutlinedIcon />
             </IconButton>
         </Layout>
