@@ -5,7 +5,8 @@ import { EntriesState } from "./EntriesProvider";
 type EntriesActionType =
 	| { type: "[Entry] - New Entry"; payload: Entry }
 	| { type: "[Entry] - Update Entry Status"; payload: Entry }
-	| { type: "[Entry] - Refresh Entries"; payload: Entry[] };
+	| { type: "[Entry] - Refresh Entries"; payload: Entry[] }
+	| { type: "[Entry] - Delete Entry"; payload: Entry[] };
 
 export const entriesReducer = (
 	state: EntriesState,
@@ -36,6 +37,7 @@ export const entriesReducer = (
 				...state,
 				entries: [...action.payload],
 			};
+
 		default:
 			return state;
 	}

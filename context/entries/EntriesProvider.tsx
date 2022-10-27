@@ -80,6 +80,11 @@ export const EntriesProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const deleteEntry = async (id: string) => {
+        const { data } = await entriesApi.delete(`/entries/${id}`)
+        // dispatch()
+    }
+
 
     // * useEffect to make the initial data load 
 
